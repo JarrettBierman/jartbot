@@ -1,5 +1,6 @@
 import os
 import time
+import sys
 import datetime
 import schedule
 import shutil
@@ -19,15 +20,15 @@ def main():
     api = tweepy.API(oauth)
 
     # schedule tasks
-    schedule.every().hour.at(":00").do(produce_drawings)
-    schedule.every().minute.at(":00").do(save_and_send)
-
-    # schedule.every().day.at("23:30").do(produce_drawings)
+    # schedule.every().hour.at(":00").do(produce_drawings)
+    # schedule.every().minute.at(":00").do(save_and_send)
+    # schedule.every().day.at("23:30").do(produce_drawings(48))
     # schedule.every().hour.at(":00").do(save_and_send)
-    while True:
-        # run tasks
-        schedule.run_pending()
-        time.sleep(1)
+    run_sketch()
+    # while True:
+    #     # run tasks
+    #     schedule.run_pending()
+    #     time.sleep(1)
 
 # TWITTER API STUFF
 def OAuth():
@@ -39,10 +40,10 @@ def OAuth():
         print(e)
         return None
 
-def produce_drawings():
+def produce_drawings(num_drawings):
     global cur_path
     # run processing sketch
-    run_sketch()
+    run_sketch(num_drawings)
     # make new folder
     update_cur_path()
     if not os.path.isdir(cur_path):
@@ -72,8 +73,12 @@ def send_tweet(img):
     )
     counter += 1
 
-def run_sketch():
-    runSketch = f"processing-java --sketch={os.getcwd()} --run 3 4 5 6"
+def run_sketch(num_drawings=-1):
+    '''
+    draws num_drawing drawings via sketch command and saves them
+    if no parameter is given, it will run infinity and not save images
+    '''
+    runSketch = f"processing-java --sketch={os.getcwd()} --run {num_drawings}"
     os.system(f'cmd /c {runSketch}')
 
 def update_cur_path():

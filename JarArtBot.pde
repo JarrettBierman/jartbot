@@ -12,8 +12,8 @@ int cols;
 float randOff;
 float zoff;
 PVector[][] flowfield;
-float floTime, changeTime;
-int floTimeThresh, changeTimeThresh;
+int floTime, changeTime;
+int floTimeThresh, floTimeBuffer, changeTimeThresh;
 float a;
 
 int[] randFillKeys, randStrokeKeys;
@@ -21,19 +21,20 @@ int randStrokeHue, randStrokeSize;
 int randSizeKey, randMaxSize;
 
 int numDrawings;
+int maxDrawings;
 
 
 void setup(){
     if(args != null) {
-        println(args.length);
-        for (int i = 0; i < args.length; i++) {
-            println(args[i]);
-        }
+        maxDrawings = int(args[0]);
     }
+    else {
+        maxDrawings = -1;
+    }
+    numDrawings = 0;
     size(800,800);
     exp = createGraphics(3200, 3200);
     scl = 10;
-    numDrawings = 0;
     rows = floor(height/scl);
     cols = floor(width/scl);
     flowfield = new PVector[rows][cols];
@@ -43,22 +44,32 @@ void setup(){
     a = 0;
 
     // timing stuff
+    floTime = 0;
     floTimeThresh = 2;
+    changeTime = 0;
     changeTimeThresh = 30;
-    saveAndChange();
+    changeParameters();
 }
 
-
-
-void draw(){
-  floTime = (System.currentTimeMillis() / 100) % (10 * floTimeThresh);
-  changeTime = (System.currentTimeMillis() / 100) % (10 * changeTimeThresh);
-  if(floTime == 0){
-    updateFlowField();
-  }
-  if(changeTime == 0) {
-    saveAndChange();
-  }
+void draw() {
+    // tick
+    if(System.currentTimeMillis() / 10 % 100 < 2) {
+        floTime += 1;
+        changeTime += 1;
+    }
+    print("FPS:\t" + ceil(frameRate) + "\t\tTime:\t" + changeTime + "/" + changeTimeThresh + "             \r");
+    if(floTime == floTimeThresh){
+        updateFlowField();
+        floTime = 0;
+    }
+    if(changeTime == changeTimeThresh) {
+        if(maxDrawings > 0) {
+            saveSketch();
+        }
+        changeParameters();
+        changeTime = 0;
+    }
+    
     p.update();
     p.follow(scl, flowfield);
     float xx = p.getPos().x;
@@ -130,25 +141,21 @@ void updateFlowField(){
   }
 }
 
-void saveAndChange() {
-
-    // Save Image
+void saveSketch() {
     String imageName = "jarArt--"+year()+"-"+month()+"-"+day()+"--"+numDrawings;
-    if(SAVE_ON && numDrawings != 0){
-        PImage temp = exp.get();
-        temp.save("\\drawings\\"+imageName+".png");
-        println("Saved sketch " + imageName);
-        println(numDrawings + "/24 Drawings Complete");
-    }
+    PImage temp = exp.get();
+    temp.save("\\drawings\\"+imageName+".png");
 
-    // increase drawing count
+    println("Saved sketch " + imageName);
+    println(numDrawings + "/" + maxDrawings + " Drawings Complete");
     numDrawings++;
+}
+
+void changeParameters() {
+    // increase drawing count
     exp = createGraphics(3200, 3200);
 
     // close once 25 drawings have been made
-    if(numDrawings >= 24) {
-        exit();
-    }
 
     // random colors
     int numOptions = 9;
@@ -182,7 +189,7 @@ void saveAndChange() {
     p.setMaxSpeed(random(4,13));
 
     // random drawing duration
-    changeTimeThresh = floor(random(15,45));
+    changeTimeThresh = floor(random(5,30));
 
     // DEBUG
     // qualityControl();
@@ -261,22 +268,6 @@ float mapDistCenter(int small, int big) {
 float mapDistCenter(int big){
     return mapDistCenter(0, big);
 }
-
-// void saveHighRes(String path, int scaleFactor) {
-//   PGraphics hires = createGraphics(
-//                         width * scaleFactor,
-//                         height * scaleFactor,
-//                         JAVA2D);
-//   println("Generating high-resolution image...");
-
-//   beginRecord(hires);
-//   hires.scale(scaleFactor);
-//   seededRender();
-//   endRecord();
-
-//   hires.save(path + "-highres.png");
-//   println("Finished");
-// }
 
 void printRandoms() {
     println("----RANDOM VARIABLES----");
