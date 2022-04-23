@@ -1,10 +1,9 @@
 import java.io.*;
 import java.util.*;
 
-boolean SAVE_ON = true;
-int SCALE = 4;
-PGraphics exp;
+String NUM_FILE_PATH = "C:\\Users\\jarre\\Documents\\Processing\\code\\JarArtBot\\drawingNum.txt";
 
+PGraphics exp;
 Particle p;
 float scl;
 int rows;
@@ -23,6 +22,7 @@ int randSizeKey, randMaxSize;
 int numDrawings;
 int maxDrawings;
 
+int totalDrawings;
 
 void setup(){
     if(args != null) {
@@ -32,6 +32,14 @@ void setup(){
         maxDrawings = -1;
     }
     numDrawings = 0;
+    try {
+        File f = new File(NUM_FILE_PATH);
+        Scanner fr = new Scanner(f);
+        totalDrawings = int(fr.nextLine());
+    }
+    catch (FileNotFoundException e) {
+        println(e);
+    }
     size(800,800);
     exp = createGraphics(3200, 3200);
     scl = 10;
@@ -52,22 +60,14 @@ void setup(){
 }
 
 void draw() {
+    // exit
+    if(numDrawings >= maxDrawings) {
+        exit();
+    }
+
     // tick
-    if(System.currentTimeMillis() / 10 % 100 < 2) {
-        floTime += 1;
-        changeTime += 1;
-    }
-    print("FPS:\t" + ceil(frameRate) + "\t\tTime:\t" + changeTime + "/" + changeTimeThresh + "             \r");
-    if(floTime == floTimeThresh){
-        updateFlowField();
-        floTime = 0;
-    }
-    if(changeTime == changeTimeThresh) {
-        if(maxDrawings > 0) {
-            saveSketch();
-        }
-        changeParameters();
-        changeTime = 0;
+    if(frameCount % 60 == 0) {
+        timerTick();
     }
     
     p.update();
@@ -118,9 +118,37 @@ void draw() {
     ellipse(width - yy, xx, size, size);
 }
 
+void timerTick() {
+    floTime += 1;
+    changeTime += 1;
+    print("FPS:\t" + ceil(frameRate) + "\t\tTime:\t" + changeTime + "/" + changeTimeThresh + "             \r");
+
+    if(floTime == floTimeThresh){
+        updateFlowField();
+        floTime = 0;
+    }
+
+    if(changeTime == changeTimeThresh) {
+        if(maxDrawings > 0) {
+            saveSketch();
+            // update totaldrawings
+            totalDrawings++;
+            try{
+                FileWriter fw = new FileWriter(NUM_FILE_PATH);
+                fw.write(totalDrawings + "");
+                fw.close();
+            }
+            catch(IOException e) {
+                println(e);
+            }
+        }
+        changeParameters();
+        changeTime = 0;
+    }
+}
 
 void updateFlowField(){
-  float mag = 1;
+  float mag = 0.15;
   noiseSeed(System.currentTimeMillis());
   int randAngle = floor(random(360) - 180);
   float yoff = 0;
@@ -128,7 +156,6 @@ void updateFlowField(){
     float xoff = 0;
     for(int c = 0; c < cols; c++){
       float angle = noise(xoff, yoff) * TWO_PI;
-      //PVector v = PVector.fromAngle(radians(a));
       PVector v = PVector.fromAngle(angle + radians(randAngle));
       v.setMag(mag);
       if(floor(random(2)) == 0){
@@ -142,13 +169,14 @@ void updateFlowField(){
 }
 
 void saveSketch() {
-    String imageName = "jarArt--"+year()+"-"+month()+"-"+day()+"--"+numDrawings;
+    String drawNumStr = String.format("%05d", totalDrawings);
+    String imageName = "botdraw-" + drawNumStr;
     PImage temp = exp.get();
     temp.save("\\drawings\\"+imageName+".png");
-
+    numDrawings++;
+    println();
     println("Saved sketch " + imageName);
     println(numDrawings + "/" + maxDrawings + " Drawings Complete");
-    numDrawings++;
 }
 
 void changeParameters() {
@@ -186,10 +214,10 @@ void changeParameters() {
     updateFlowField();
 
     // random particle attributes
-    p.setMaxSpeed(random(4,13));
+    p.setMaxSpeed(random(4,15));
 
     // random drawing duration
-    changeTimeThresh = floor(random(5,30));
+    changeTimeThresh = floor(random(5,35));
 
     // DEBUG
     // qualityControl();

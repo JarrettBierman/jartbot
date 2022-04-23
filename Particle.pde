@@ -21,6 +21,10 @@ public class Particle{
       return this.vel;
   }
 
+  public float getVelMag(){
+      return this.vel.mag();
+  }
+
   public float getFieldValue(float scale){
     int row = floor(this.pos.x / scale);
     int col = floor(this.pos.y / scale);
