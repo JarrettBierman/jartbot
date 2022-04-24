@@ -1,7 +1,8 @@
 import java.io.*;
 import java.util.*;
 
-String NUM_FILE_PATH = "C:\\Users\\jarre\\Documents\\Processing\\code\\JarArtBot\\drawingNum.txt";
+// String NUM_FILE_PATH = "C:\\Users\\jarre\\Documents\\Processing\\code\\JarArtBot\\drawingNum.txt";
+String NUM_FILE_PATH = "C:\\Users\\jarrettvm\\Desktop\\JarArtBot\\drawingNum.txt";
 
 PGraphics exp;
 Particle p;

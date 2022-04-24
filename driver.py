@@ -24,7 +24,7 @@ def main():
     # schedule.every().minute.at(":00").do(save_and_send)
     # schedule.every().day.at("23:30").do(produce_drawings(48))
     # schedule.every().hour.at(":00").do(save_and_send)
-    run_sketch(5)
+    run_sketch()
     # make_cur_dir()
     # save_and_send()
     # save_and_send()
@@ -60,7 +60,7 @@ def save_and_send():
             print(f"could not move file: {cur_file}")
 
 def send_tweet(img):
-    text = f"JarBot Art Project \U0001F916 \U0001F58C \n #{counter}"
+    text = f"JarBot Art Project \U0001F916 \U0001F58C \n #{5}"
     api.update_status_with_media(
         status=text,
         filename = img
@@ -71,8 +71,10 @@ def run_sketch(num_drawings=-1):
     draws num_drawing drawings via sketch command and saves them
     if no parameter is given, it will run infinity and not save images
     '''
-    runSketch = f"processing-java --sketch={os.getcwd()} --run {num_drawings}"
-    os.system(f'cmd /c {runSketch}')
+    command_loc = "C:\\Users\\jarrettvm\\Desktop\\processing-4.0b7"
+    sketch_loc = "C:\\Users\\jarrettvm\\Desktop\\JarArtBot"
+    run_sketch = f"{command_loc}\\processing-java --sketch={sketch_loc} --run {num_drawings}"
+    os.system(f'cmd /c {run_sketch}')
 
 def make_cur_dir():
     global cur_path
