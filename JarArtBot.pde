@@ -4,7 +4,7 @@ import java.util.*;
 // String NUM_FILE_PATH = "C:\\Users\\jarre\\Documents\\Processing\\code\\JarArtBot\\drawingNum.txt";
 String NUM_FILE_PATH = "C:\\Users\\jarrettvm\\Desktop\\JarArtBot\\drawingNum.txt";
 
-boolean FAST_MODE = true;
+boolean DEBUG = false;
 
 PGraphics exp;
 Particle p;
@@ -34,7 +34,9 @@ void setup(){
     else {
         maxDrawings = -1;
     }
+
     numDrawings = 0;
+
     try {
         File f = new File(NUM_FILE_PATH);
         Scanner fr = new Scanner(f);
@@ -57,14 +59,9 @@ void setup(){
     floTime = 0;
     floTimeThresh = 2;
     changeTime = 0;
-    changeParameters();
     size(800,800);
     exp = createGraphics(3200, 3200);
-    // fast draw mode here
-    if(FAST_MODE && maxDrawings > -2) {
-        noLoop();
-        fastDraw(10);
-    }
+    changeParameters();
 }
 
 void draw() {
@@ -72,47 +69,17 @@ void draw() {
     if(maxDrawings != -1 && numDrawings >= maxDrawings) {
         exit();
     }
-    if(!FAST_MODE) {
 
-        // tick
-        if(frameCount % 60 == 0) {
-            timerTick();
-        }
-        
-        updateOneFrame();
+    // tick
+    if(frameCount % 60 == 0) {
+        timerTick();
+    } 
 
-        // draw to preview canvas
-        float xx = p.getPos().x;
-        float yy = p.getPos().y;
-        float size = getRandomSize(randSizeKey, randMaxSize);
-        fill(getRandomColor(randFillKeys));
-        stroke(getRandomColor(randStrokeKeys, randStrokeHue));
-        strokeWeight(randStrokeSize);
-        fill(getRandomColor(randFillKeys));
-        stroke(getRandomColor(randStrokeKeys, randStrokeHue));
-        strokeWeight(randStrokeSize);
-
-        ellipse(xx, yy, size, size);
-        ellipse(yy, xx, size, size);
-
-        ellipse(width - xx, width - yy, size, size);
-        ellipse(width - yy, width - xx, size, size);
-
-        ellipse(xx, width - yy, size, size);
-        ellipse(yy, width - xx, size, size);
-
-        ellipse(width - xx, yy, size, size);
-        ellipse(width - yy, xx, size, size);
-    }
-}
-
-void updateOneFrame() {
     p.update();
     p.follow(scl, flowfield);
     float xx = p.getPos().x;
     float yy = p.getPos().y;
     float size = getRandomSize(randSizeKey, randMaxSize);
-
 
     // draw to exporting canvas at 4x scale
     beginRecord(exp);
@@ -133,19 +100,27 @@ void updateOneFrame() {
         exp.ellipse(width - xx, yy, size, size);
         exp.ellipse(width - yy, xx, size, size);
     endRecord();
-}
 
-void fastDraw(int numDrawings) {
-    for(int d = 0; d < numDrawings; d++) {
-        int frames = int(changeTimeThresh * frameRate);
-        for(int i = 0; i < frames; i++) {
-            updateOneFrame();
-            println(i + "/" + frames + "\r");
-        }
-        saveSketch();
-        changeParameters();
+    if(DEBUG) {
+        fill(getRandomColor(randFillKeys));
+        stroke(getRandomColor(randStrokeKeys, randStrokeHue));
+        strokeWeight(randStrokeSize);
+        fill(getRandomColor(randFillKeys));
+        stroke(getRandomColor(randStrokeKeys, randStrokeHue));
+        strokeWeight(randStrokeSize);
+
+        ellipse(xx, yy, size, size);
+        ellipse(yy, xx, size, size);
+
+        ellipse(width - xx, width - yy, size, size);
+        ellipse(width - yy, width - xx, size, size);
+
+        ellipse(xx, width - yy, size, size);
+        ellipse(yy, width - xx, size, size);
+
+        ellipse(width - xx, yy, size, size);
+        ellipse(width - yy, xx, size, size);
     }
-    exit();
 }
 
 void timerTick() {
@@ -194,8 +169,8 @@ void saveSketch() {
     PImage temp = exp.get();
     temp.save("\\drawings\\"+imageName+".png");
     numDrawings++;
-    println();
-    println("Saved sketch " + imageName);
+
+    println("Saved sketch " + imageName + "                           ");
     println(numDrawings + "/" + maxDrawings + " Drawings Complete");
     totalDrawings++;
     try{
@@ -211,8 +186,6 @@ void saveSketch() {
 void changeParameters() {
     // increase drawing count
     exp = createGraphics(3200, 3200);
-
-    // close once 25 drawings have been made
 
     // random colors
     int numOptions = 9;
@@ -259,7 +232,9 @@ void changeParameters() {
     exp.background(rands[0], rands[1], rands[2]);
     endRecord();
     // preview background
-    background(rands[0], rands[1], rands[2]);
+    if(DEBUG) {
+        background(rands[0], rands[1], rands[2]);
+    }
     printRandoms();
 }
 
@@ -286,15 +261,6 @@ color getRandomColor(int[] keys, int range) {
     return color(getRandomAttrVal(keys[0], range), 
                  getRandomAttrVal(keys[1], range), 
                  getRandomAttrVal(keys[2], range));
-}
-
-void qualityControl() {
-//    randFillKeys = new int[]{8,8,8};
-//    randStrokeKeys = 42;
-//    randStrokeHue = 42;
-//    randMaxSize = 200;
-//    randStrokeSize = 0;
-   randSizeKey = 8;
 }
 
 float getRandomSize(int ret, int maxSize) {
@@ -335,6 +301,4 @@ void printRandoms() {
     println("Size Max:\t" + randMaxSize);
     println("Max Speed:\t" + p.getMaxSpeed());
     println("Drawing Time:\t" + changeTimeThresh);
-    
-
 }
