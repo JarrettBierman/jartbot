@@ -24,11 +24,11 @@ def main():
     # schedule.every().minute.at(":00").do(save_and_send)
     # schedule.every().day.at("23:30").do(produce_drawings(48))
     # schedule.every().hour.at(":00").do(save_and_send)
-    run_sketch(1)
-    make_cur_dir()
-    save_and_send()
-    save_and_send()
-    save_and_send()
+    run_sketch(5)
+    # make_cur_dir()
+    # save_and_send()
+    # save_and_send()
+    # save_and_send()
     # while True:
     #     # run tasks
     #     schedule.run_pending()

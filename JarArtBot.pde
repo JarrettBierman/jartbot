@@ -61,7 +61,7 @@ void setup(){
 
 void draw() {
     // exit
-    if(numDrawings >= maxDrawings) {
+    if(maxDrawings != -1 && numDrawings >= maxDrawings) {
         exit();
     }
 
@@ -129,7 +129,7 @@ void timerTick() {
     }
 
     if(changeTime == changeTimeThresh) {
-        if(maxDrawings > 0) {
+        if(maxDrawings != -1) {
             saveSketch();
             // update totaldrawings
             totalDrawings++;
