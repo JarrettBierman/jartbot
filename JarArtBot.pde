@@ -4,6 +4,8 @@ import java.util.*;
 // String NUM_FILE_PATH = "C:\\Users\\jarre\\Documents\\Processing\\code\\JarArtBot\\drawingNum.txt";
 String NUM_FILE_PATH = "C:\\Users\\jarrettvm\\Desktop\\JarArtBot\\drawingNum.txt";
 
+boolean FAST_MODE = true;
+
 PGraphics exp;
 Particle p;
 float scl;
@@ -41,8 +43,7 @@ void setup(){
     catch (FileNotFoundException e) {
         println(e);
     }
-    size(800,800);
-    exp = createGraphics(3200, 3200);
+
     scl = 10;
     rows = floor(height/scl);
     cols = floor(width/scl);
@@ -56,8 +57,14 @@ void setup(){
     floTime = 0;
     floTimeThresh = 2;
     changeTime = 0;
-    changeTimeThresh = 30;
     changeParameters();
+    size(800,800);
+    exp = createGraphics(3200, 3200);
+    // fast draw mode here
+    if(FAST_MODE && maxDrawings > -2) {
+        noLoop();
+        fastDraw(10);
+    }
 }
 
 void draw() {
@@ -65,12 +72,41 @@ void draw() {
     if(maxDrawings != -1 && numDrawings >= maxDrawings) {
         exit();
     }
+    if(!FAST_MODE) {
 
-    // tick
-    if(frameCount % 60 == 0) {
-        timerTick();
+        // tick
+        if(frameCount % 60 == 0) {
+            timerTick();
+        }
+        
+        updateOneFrame();
+
+        // draw to preview canvas
+        float xx = p.getPos().x;
+        float yy = p.getPos().y;
+        float size = getRandomSize(randSizeKey, randMaxSize);
+        fill(getRandomColor(randFillKeys));
+        stroke(getRandomColor(randStrokeKeys, randStrokeHue));
+        strokeWeight(randStrokeSize);
+        fill(getRandomColor(randFillKeys));
+        stroke(getRandomColor(randStrokeKeys, randStrokeHue));
+        strokeWeight(randStrokeSize);
+
+        ellipse(xx, yy, size, size);
+        ellipse(yy, xx, size, size);
+
+        ellipse(width - xx, width - yy, size, size);
+        ellipse(width - yy, width - xx, size, size);
+
+        ellipse(xx, width - yy, size, size);
+        ellipse(yy, width - xx, size, size);
+
+        ellipse(width - xx, yy, size, size);
+        ellipse(width - yy, xx, size, size);
     }
-    
+}
+
+void updateOneFrame() {
     p.update();
     p.follow(scl, flowfield);
     float xx = p.getPos().x;
@@ -97,26 +133,19 @@ void draw() {
         exp.ellipse(width - xx, yy, size, size);
         exp.ellipse(width - yy, xx, size, size);
     endRecord();
+}
 
-    // draw to preview canvas
-    fill(getRandomColor(randFillKeys));
-    stroke(getRandomColor(randStrokeKeys, randStrokeHue));
-    strokeWeight(randStrokeSize);
-    fill(getRandomColor(randFillKeys));
-    stroke(getRandomColor(randStrokeKeys, randStrokeHue));
-    strokeWeight(randStrokeSize);
-
-    ellipse(xx, yy, size, size);
-    ellipse(yy, xx, size, size);
-
-    ellipse(width - xx, width - yy, size, size);
-    ellipse(width - yy, width - xx, size, size);
-
-    ellipse(xx, width - yy, size, size);
-    ellipse(yy, width - xx, size, size);
-
-    ellipse(width - xx, yy, size, size);
-    ellipse(width - yy, xx, size, size);
+void fastDraw(int numDrawings) {
+    for(int d = 0; d < numDrawings; d++) {
+        int frames = int(changeTimeThresh * frameRate);
+        for(int i = 0; i < frames; i++) {
+            updateOneFrame();
+            println(i + "/" + frames + "\r");
+        }
+        saveSketch();
+        changeParameters();
+    }
+    exit();
 }
 
 void timerTick() {
@@ -132,16 +161,6 @@ void timerTick() {
     if(changeTime == changeTimeThresh) {
         if(maxDrawings != -1) {
             saveSketch();
-            // update totaldrawings
-            totalDrawings++;
-            try{
-                FileWriter fw = new FileWriter(NUM_FILE_PATH);
-                fw.write(totalDrawings + "");
-                fw.close();
-            }
-            catch(IOException e) {
-                println(e);
-            }
         }
         changeParameters();
         changeTime = 0;
@@ -178,6 +197,15 @@ void saveSketch() {
     println();
     println("Saved sketch " + imageName);
     println(numDrawings + "/" + maxDrawings + " Drawings Complete");
+    totalDrawings++;
+    try{
+        FileWriter fw = new FileWriter(NUM_FILE_PATH);
+        fw.write(totalDrawings + "");
+        fw.close();
+    }
+    catch(IOException e) {
+        println(e);
+    }
 }
 
 void changeParameters() {
