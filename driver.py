@@ -17,6 +17,7 @@ words = []
 
 def main():
     global api, words
+
     # read in file
     with open("adjectives.txt") as f:
         words = f.readline().split()
@@ -24,21 +25,26 @@ def main():
     # set up twitter api
     oauth = OAuth()
     api = tweepy.API(oauth)
+    
+    # send tweets
+    schedule.every().hour.at(":00").do(save_and_send)
+    schedule.every().hour.at(":30").do(save_and_send)
 
-    # schedule tasks
-    # schedule.every().hour.at(":00").do(produce_drawings)
-    # schedule.every().minute.at(":00").do(save_and_send)
-    # schedule.every().day.at("23:30").do(produce_drawings(48))
-    # schedule.every().hour.at(":00").do(save_and_send)
-    # run_sketch(5)
-    make_cur_dir()
-    save_and_send()
-    # save_and_send()
-    # save_and_send()
-    # while True:
-    #     # run tasks
-    #     schedule.run_pending()
-    #     time.sleep(1)
+    # make new folder
+    schedule.every().day.at("15:02").do(make_cur_dir)               #11p:02am EST
+
+    # make new drawings
+    schedule.every().day.at("20:02").do(run_sketch, num_drawings=8) #04p:02pm EST
+    schedule.every().day.at("21:02").do(run_sketch, num_drawings=8) #05p:02pm EST
+    schedule.every().day.at("22:02").do(run_sketch, num_drawings=8) #06p:02pm EST
+    schedule.every().day.at("23:02").do(run_sketch, num_drawings=8) #07p:02pm EST
+    schedule.every().day.at("00:02").do(run_sketch, num_drawings=8) #08p:02pm EST
+    schedule.every().day.at("01:02").do(run_sketch, num_drawings=8) #09p:02pm EST
+
+    # run tasks
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 # TWITTER API STUFF
 def OAuth():
@@ -55,9 +61,9 @@ def save_and_send():
     global cur_path
     cur_file = get_top_drawing(cur_root_path)
     if cur_file and os.path.isfile(cur_file):
-        print(f"sending tweet at {datetime.datetime.now()}")
         # actually send tweet here
         send_tweet(cur_file)
+        print(f"Sent Tweet of {cur_file} at {datetime.datetime.now()}")
         # move to folder
         try:
             shutil.move(cur_file, cur_path)
@@ -94,11 +100,6 @@ def get_top_drawing(root):
         if os.path.isfile(os.path.join(root, f)):
             return os.path.join(root, f)
     return None
-
-def test_api():
-    public_tweets = api.home_timeline()
-    for tweet in public_tweets:
-        print(tweet.text)
 
 
 if __name__ == "__main__":
