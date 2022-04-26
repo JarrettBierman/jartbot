@@ -88,7 +88,7 @@ void draw() {
         exp.stroke(getRandomColor(randStrokeKeys, randStrokeHue));
         exp.strokeWeight(randStrokeSize);
 
-        exp.ellipse(xx, yy, size, size/2);
+        exp.ellipse(xx, yy, size, size);
         exp.ellipse(yy, xx, size, size);
 
         exp.ellipse(width - xx, width - yy, size, size);
