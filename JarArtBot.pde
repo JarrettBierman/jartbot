@@ -184,9 +184,6 @@ void saveSketch() {
 }
 
 void changeParameters() {
-    // increase drawing count
-    exp = createGraphics(3200, 3200);
-
     // random colors
     int numOptions = 9;
     int tempRand = floor(random(10));
@@ -219,18 +216,16 @@ void changeParameters() {
     p.setMaxSpeed(random(4,15));
 
     // random drawing duration
-    changeTimeThresh = floor(random(5,35));
-
-    // DEBUG
-    // qualityControl();
+    changeTimeThresh = floor(random(5,30));
 
     // Restart Canvas
     delay(500);
     int[] rands = new int[]{int(random(100,255)), int(random(100,255)), int(random(100,255))};
-    // export background
     beginRecord(exp);
-    exp.background(rands[0], rands[1], rands[2]);
+        exp.clear();
+        exp.background(rands[0], rands[1], rands[2]);
     endRecord();
+
     // preview background
     if(DEBUG) {
         background(rands[0], rands[1], rands[2]);
