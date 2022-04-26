@@ -31,7 +31,7 @@ def main():
     schedule.every().hour.at(":30").do(save_and_send)
 
     # make new folder
-    schedule.every().day.at("15:02").do(make_cur_dir)               #11p:02am EST
+    schedule.every().day.at("05:01").do(make_cur_dir)
 
     # make new drawings
     schedule.every().day.at("20:02").do(run_sketch, num_drawings=8) #04p:02pm EST
