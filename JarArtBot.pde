@@ -46,6 +46,7 @@ void setup(){
         println(e);
     }
 
+    size(800,800);
     scl = 10;
     rows = floor(height/scl);
     cols = floor(width/scl);
@@ -59,8 +60,7 @@ void setup(){
     floTime = 0;
     floTimeThresh = 2;
     changeTime = 0;
-    size(800,800);
-    exp = createGraphics(3200, 3200);
+    exp = createGraphics(2400, 2400);
     changeParameters();
 }
 
@@ -83,7 +83,7 @@ void draw() {
 
     // draw to exporting canvas at 4x scale
     beginRecord(exp);
-        exp.scale(4);
+        exp.scale(3);
         exp.fill(getRandomColor(randFillKeys));
         exp.stroke(getRandomColor(randStrokeKeys, randStrokeHue));
         exp.strokeWeight(randStrokeSize);
@@ -213,10 +213,10 @@ void changeParameters() {
     updateFlowField();
 
     // random particle attributes
-    p.setMaxSpeed(random(4,15));
+    p.setMaxSpeed(random(5,15));
 
     // random drawing duration
-    changeTimeThresh = floor(random(5,30));
+    changeTimeThresh = floor(random(5,28));
 
     // Restart Canvas
     delay(500);

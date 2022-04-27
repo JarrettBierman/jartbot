@@ -25,26 +25,25 @@ def main():
     # set up twitter api
     oauth = OAuth()
     api = tweepy.API(oauth)
+
+    save_and_send()
     
     # send tweets
     schedule.every().hour.at(":00").do(save_and_send)
     schedule.every().hour.at(":30").do(save_and_send)
 
-    # make new folder
-    schedule.every().day.at("05:01").do(make_cur_dir)
-
     # make new drawings
-    schedule.every().day.at("20:02").do(run_sketch, num_drawings=8) #04p:02pm EST
-    schedule.every().day.at("21:02").do(run_sketch, num_drawings=8) #05p:02pm EST
-    schedule.every().day.at("22:02").do(run_sketch, num_drawings=8) #06p:02pm EST
-    schedule.every().day.at("23:02").do(run_sketch, num_drawings=8) #07p:02pm EST
-    schedule.every().day.at("00:02").do(run_sketch, num_drawings=8) #08p:02pm EST
-    schedule.every().day.at("01:02").do(run_sketch, num_drawings=8) #09p:02pm EST
+    # schedule.every().day.at("20:02").do(run_sketch, num_drawings=8) #04p:02pm EST
+    # schedule.every().day.at("21:02").do(run_sketch, num_drawings=8) #05p:02pm EST
+    # schedule.every().day.at("22:02").do(run_sketch, num_drawings=8) #06p:02pm EST
+    # schedule.every().day.at("23:02").do(run_sketch, num_drawings=8) #07p:02pm EST
+    # schedule.every().day.at("00:02").do(run_sketch, num_drawings=8) #08p:02pm EST
+    # schedule.every().day.at("01:02").do(run_sketch, num_drawings=8) #09p:02pm EST
 
     # run tasks
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(1)
 
 # TWITTER API STUFF
 def OAuth():
@@ -62,15 +61,24 @@ def save_and_send():
     cur_file = get_top_drawing(cur_root_path)
     if cur_file and os.path.isfile(cur_file):
         # actually send tweet here
-        send_tweet(cur_file)
-        print(f"Sent Tweet of {cur_file} at {datetime.datetime.now()}")
+        try:
+            send_tweet(cur_file)
+            print(f"Sent Tweet of {cur_file} at {datetime.datetime.now()}")
+        except:
+            print("Tweet did not send :(")
+
         # move to folder
+        make_cur_dir()
         try:
             shutil.move(cur_file, cur_path)
         except:
             print(f"could not move file: {cur_file}")
 
 def send_tweet(img):
+    global words
+    if len(words) <= 0:
+        with open("adjectives.txt") as f:
+            words = f.readline().split()
     num = int(img[19:-4])
     adj = words[random.randrange(0,len(words))]
     text = f"Drawing #{num}\nThis piece is {adj}."
