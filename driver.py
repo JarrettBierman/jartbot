@@ -1,4 +1,3 @@
-from itertools import count
 import os
 import time
 import sys
@@ -73,16 +72,19 @@ def save_and_send():
             print(f"could not move file: {cur_file}")
 
 def send_tweet(img):
-    global words
+    global words, api
     if len(words) <= 0:
         with open("adjectives.txt") as f:
             words = f.readline().split()
     num = int(img[19:-4])
     adj = words[random.randrange(0,len(words))]
     text = f"Drawing #{num}\nThis piece is {adj}."
-    api.update_status_with_media(
+    media = api.media_upload(img)
+    print(media.id)
+
+    api.update_status(
         status=text,
-        filename = img
+        media_ids=[media.id]
     )
 
 def run_sketch(num_drawings=-1):

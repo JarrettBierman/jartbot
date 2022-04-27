@@ -60,7 +60,7 @@ void setup(){
     floTime = 0;
     floTimeThresh = 2;
     changeTime = 0;
-    exp = createGraphics(2400, 2400);
+    exp = createGraphics(3200, 3200);
     changeParameters();
 }
 
@@ -213,14 +213,14 @@ void changeParameters() {
     updateFlowField();
 
     // random particle attributes
-    p.setMaxSpeed(random(5,15));
+    p.setMaxSpeed(random(3,15));
 
     // random drawing duration
-    changeTimeThresh = floor(random(5,28));
+    changeTimeThresh = floor(random(4,35));
 
     // Restart Canvas
     delay(500);
-    int[] rands = new int[]{int(random(100,255)), int(random(100,255)), int(random(100,255))};
+    int[] rands = new int[]{int(random(256)), int(random(256)), int(random(256))};
     beginRecord(exp);
         exp.clear();
         exp.background(rands[0], rands[1], rands[2]);
