@@ -83,7 +83,7 @@ void draw() {
 
     // draw to exporting canvas at 4x scale
     beginRecord(exp);
-        exp.scale(3);
+        exp.scale(4);
         exp.fill(getRandomColor(randFillKeys));
         exp.stroke(getRandomColor(randStrokeKeys, randStrokeHue));
         exp.strokeWeight(randStrokeSize);
