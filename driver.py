@@ -2,6 +2,7 @@ import os
 import time
 import sys
 import datetime
+from tkinter import E
 import schedule
 import shutil
 import tweepy
@@ -61,8 +62,9 @@ def save_and_send():
         try:
             send_tweet(cur_file)
             print(f"Sent Tweet of {cur_file} at {datetime.datetime.now()}")
-        except:
+        except Exception as e:
             print("Tweet did not send :(")
+            print(e)
 
         # move to folder
         make_cur_dir()
@@ -80,11 +82,10 @@ def send_tweet(img):
     adj = words[random.randrange(0,len(words))]
     text = f"Drawing #{num}\nThis piece is {adj}."
     media = api.media_upload(img)
-    print(media.id)
 
     api.update_status(
         status=text,
-        media_ids=[media.id]
+        media_ids=[media.media_id]
     )
 
 def run_sketch(num_drawings=-1):
