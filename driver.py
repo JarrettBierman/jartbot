@@ -25,25 +25,23 @@ def main():
     # set up twitter api
     oauth = OAuth()
     api = tweepy.API(oauth)
-
-    save_and_send()
     
     # send tweets
     schedule.every().hour.at(":00").do(save_and_send)
     schedule.every().hour.at(":30").do(save_and_send)
 
     # make new drawings
-    # schedule.every().day.at("20:02").do(run_sketch, num_drawings=8) #04p:02pm EST
-    # schedule.every().day.at("21:02").do(run_sketch, num_drawings=8) #05p:02pm EST
-    # schedule.every().day.at("22:02").do(run_sketch, num_drawings=8) #06p:02pm EST
-    # schedule.every().day.at("23:02").do(run_sketch, num_drawings=8) #07p:02pm EST
-    # schedule.every().day.at("00:02").do(run_sketch, num_drawings=8) #08p:02pm EST
-    # schedule.every().day.at("01:02").do(run_sketch, num_drawings=8) #09p:02pm EST
+    schedule.every().day.at("20:02").do(run_sketch, num_drawings=8) #04p:02pm EST
+    schedule.every().day.at("21:02").do(run_sketch, num_drawings=8) #05p:02pm EST
+    schedule.every().day.at("22:02").do(run_sketch, num_drawings=8) #06p:02pm EST
+    schedule.every().day.at("23:02").do(run_sketch, num_drawings=8) #07p:02pm EST
+    schedule.every().day.at("00:02").do(run_sketch, num_drawings=8) #08p:02pm EST
+    schedule.every().day.at("01:02").do(run_sketch, num_drawings=8) #09p:02pm EST
 
     # run tasks
-    # while True:
-    #     schedule.run_pending()
-    #     time.sleep(1)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 # TWITTER API STUFF
 def OAuth():
