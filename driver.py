@@ -27,16 +27,14 @@ def main():
     api = tweepy.API(oauth)
     
     # send tweets
-    schedule.every().hour.at(":00").do(save_and_send)
-    schedule.every().hour.at(":30").do(save_and_send)
+    schedule.every().day.at("14:00").do(save_and_send) #10p:00am EST
+    schedule.every().day.at("16:00").do(save_and_send) #12p:00pm EST
+    schedule.every().day.at("18:00").do(save_and_send) #2p:00pm EST
+    schedule.every().day.at("20:00").do(save_and_send) #4p:00pm EST
+    schedule.every().day.at("22:00").do(save_and_send) #6p:00pm EST
 
     # make new drawings
-    schedule.every().day.at("20:02").do(run_sketch, num_drawings=8) #04p:02pm EST
-    schedule.every().day.at("21:02").do(run_sketch, num_drawings=8) #05p:02pm EST
-    schedule.every().day.at("22:02").do(run_sketch, num_drawings=8) #06p:02pm EST
-    schedule.every().day.at("23:02").do(run_sketch, num_drawings=8) #07p:02pm EST
-    schedule.every().day.at("00:02").do(run_sketch, num_drawings=8) #08p:02pm EST
-    schedule.every().day.at("01:02").do(run_sketch, num_drawings=8) #09p:02pm EST
+    schedule.every().day.at("22:02").do(run_sketch, num_drawings=6) #06p:02pm EST
 
     # run tasks
     while True:
