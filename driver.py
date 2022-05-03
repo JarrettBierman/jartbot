@@ -31,11 +31,11 @@ def main():
     schedule.every().day.at("16:00").do(save_and_send) #12:00pm EST
     schedule.every().day.at("19:00").do(save_and_send) #3:00pm EST
     schedule.every().day.at("22:00").do(save_and_send) #6:00pm EST
-    schedule.every().day.at("1:00").do(save_and_send) #9:00pm EST
-    schedule.every().day.at("4:00").do(save_and_send) #12:00am EST
+    schedule.every().day.at("01:00").do(save_and_send) #9:00pm EST
+    schedule.every().day.at("04:00").do(save_and_send) #12:00am EST
 
     # make new drawings
-    schedule.every().day.at("4:02").do(run_sketch, num_drawings=6) #012:02am EST
+    schedule.every().day.at("04:02").do(run_sketch, num_drawings=6) #012:02am EST
 
     # run tasks
     while True:
